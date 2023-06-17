@@ -220,7 +220,10 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<String> forgotPassword(Map<String, String> requestMap) {
 		try {
 			log.info("generateOtp  {}", requestMap);
+			log.info("Email  {}", requestMap.get(CafeConstants.EMAIL));
+			
 			User userObj = userDao.findByEmail(requestMap.get(CafeConstants.EMAIL));
+			
 			if (!Objects.isNull(userObj) && !Strings.isNullOrEmpty(userObj.getEmail())) {
 				int otp = random.nextInt(999999);
 //				Sending OTP as Message
@@ -238,16 +241,18 @@ public class UserServiceImpl implements UserService {
 
 				log.info("OTP  {}", otp);
 				return CafeUtils.getResponseEntity("Check Your Mail For OTP", HttpStatus.OK);
-			} else {
+			} 
+			else {
 				return CafeUtils.getResponseEntity("Email Not Exists", HttpStatus.OK);
-
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
+	
+	
+	
 
 }

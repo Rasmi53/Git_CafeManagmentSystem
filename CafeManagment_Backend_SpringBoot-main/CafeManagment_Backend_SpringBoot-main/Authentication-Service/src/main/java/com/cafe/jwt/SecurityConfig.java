@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()).and().csrf()
 				.disable().authorizeHttpRequests()
-						.antMatchers("/user/login", "/user/signup", "/user/forgotPassword", "/user/generateOtp")
+						.antMatchers("/user/login", "/user/signup", "/user/forgotPassword", "/user/generateOtp","/speaking clock")
 				.permitAll().anyRequest().authenticated().and().exceptionHandling().and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);// here we need to filter

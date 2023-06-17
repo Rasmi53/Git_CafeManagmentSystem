@@ -3,6 +3,7 @@ package com.cafe.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cafe.constants.CafeConstants;
+import com.cafe.dao.UserDao;
+import com.cafe.model.User;
 import com.cafe.service.UserService;
 import com.cafe.utils.CafeUtils;
 import com.cafe.wrapper.UserWrapper;
+import com.google.common.base.Strings;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +32,7 @@ public class UserControllerImpl implements UserController {
 
 	@Autowired
 	UserService userService;
-
+     
 	/* SignUp */
 	public ResponseEntity<String> signUp(Map<String, String> requestMap) { // name : value
 		log.info("Enter in SignUp UserControllerImpl {} ", requestMap);
@@ -104,14 +108,24 @@ public class UserControllerImpl implements UserController {
 		return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
+	@Autowired
+	UserDao userDao;
 
 	@Override
 	public ResponseEntity<String> forgotPassword(Map<String, String> requestMap) {
 		try {
-			ResponseEntity<?> otp = userService.forgotPassword(requestMap);
-			log.info("New OTP {} ", otp);
-			return CafeUtils.getResponseEntity("Check Your Mail For OTP", HttpStatus.OK);
-
+			
+           User userObj = userDao.findByEmail(requestMap.get(CafeConstants.EMAIL));
+			
+			if (!Objects.isNull(userObj) && !Strings.isNullOrEmpty(userObj.getEmail())) {
+				ResponseEntity<?> otp = userService.forgotPassword(requestMap);
+				log.info("New OTP {} ", otp);
+				return CafeUtils.getResponseEntity("Check Your Mail For OTP", HttpStatus.OK);
+			}
+			else {
+				return CafeUtils.getResponseEntity("Email Not Exists", HttpStatus.OK);
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
